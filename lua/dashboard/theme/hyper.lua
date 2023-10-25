@@ -306,8 +306,10 @@ local function gen_center(plist, config)
     plist[#plist + 1] = ''
     plist_len = 1
   end
-  ---@diagnostic disable-next-line: param-type-mismatch
-  vim.list_extend(plist, mlist)
+  if config.center == nil or config.center.enable ~= false then
+    ---@diagnostic disable-next-line: param-type-mismatch
+    vim.list_extend(plist, mlist)
+  end
   local max_len = utils.get_max_len(plist)
   if max_len <= 40 then
     local fill = (' '):rep(math.floor(vim.o.columns / 4))
@@ -321,6 +323,9 @@ local function gen_center(plist, config)
   local first_line = api.nvim_buf_line_count(config.bufnr)
   api.nvim_buf_set_lines(config.bufnr, first_line, -1, false, plist)
 
+  if config.center and config.center.enable == false then
+    return
+  end
   local start_col = plist[plist_len + 2]:find('[^%s]') - 1
   local _, scol = plist[2]:find('%S')
 
